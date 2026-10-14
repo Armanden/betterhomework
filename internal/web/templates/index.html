@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}}</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      line-height: 1.5;
+    }
+    h1 { margin-bottom: 0.25rem; }
+    .subtitle { color: #666; margin-top: 0; }
+    form.search { display: flex; gap: 0.5rem; margin: 1.5rem 0; }
+    input[type=text] {
+      flex: 1;
+      padding: 0.7rem 0.9rem;
+      font-size: 1rem;
+      border: 1px solid #999;
+      border-radius: 8px;
+    }
+    button {
+      padding: 0.7rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #2f7df6;
+      color: #fff;
+      cursor: pointer;
+    }
+    .error {
+      padding: 0.8rem 1rem;
+      background: #fde8e8;
+      color: #b00020;
+      border: 1px solid #f5c6c6;
+      border-radius: 8px;
+    }
+    .success {
+      padding: 0.8rem 1rem;
+      background: #e6f4ea;
+      color: #1e7e34;
+      border: 1px solid #b7e1c2;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+    .card-list { list-style: none; padding: 0; }
+    .card-list li {
+      padding: 0.7rem 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+    .front { font-weight: 600; }
+    .back { color: #555; margin-top: 0.2rem; }
+    .sources { color: #888; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h1>{{.Title}}</h1>
+  <p class="subtitle">Type a subject and generate an Anki flashcard deck.</p>
+
+  {{if .Error}}
+    <div class="error">{{.Error}}</div>
+  {{end}}
+
+  <form class="search" method="post" action="/search">
+    <input type="text" name="subject" placeholder="Enter a subject, e.g. photosynthesis" autofocus required>
+    <button type="submit">Search &amp; build deck</button>
+  </form>
+
+  <p class="sources">Searching via: {{range $i, $s := .Sources}}{{if $i}}, {{end}}{{$s}}{{end}}</p>
+
+  {{if and .Deck .Cards}}
+    <div class="success">
+      Generated a deck with {{len .Cards}} cards.
+      <a href="/download?deck={{.Deck}}">Download .apkg</a>
+    </div>
+
+    <h2>Preview: {{.Subject}}</h2>
+    <ul class="card-list">
+      {{range .Cards}}
+        <li>
+          <div class="front">{{.Front}}</div>
+          <div class="back">{{.Back}}</div>
+        </li>
+      {{end}}
+    </ul>
+  {{end}}
+</body>
+</html>
